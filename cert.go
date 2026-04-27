@@ -64,6 +64,10 @@ func (m *mkcert) makeCert(hosts []string) {
 	// things simple and avoid any edge cases near the 825-day boundary.
 	expiration := time.Now().AddDate(2, 0, 0)
 
+	// Personal note: set NotBefore slightly in the past to avoid clock skew
+	// issues when testing across VMs or containers with slightly drifted clocks.
+	notBefore := time.Now().Add(-5 * time.Minute)
+
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
 		Subject: pkix.Name{
@@ -73,7 +77,7 @@ func (m *mkcert) makeCert(hosts []string) {
 			OrganizationalUnit: []string{userAndHostname},
 		},
 
-		NotBefore: time.Now(), NotAfter: expiration,
+		NotBefore: notBefore, NotAfter: expiration,
 
 		KeyUsage: x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
 	}
@@ -106,7 +110,4 @@ func (m *mkcert) makeCert(hosts []string) {
 		tpl.Subject.CommonName = hosts[0]
 	}
 
-	cert, err := x509.CreateCertificate(rand.Reader, tpl, m.caCert, pub, m.caKey)
-	fatalIfErr(err, "failed to generate certificate")
-
-	certFile, keyFile, p12
+	cert, err 
