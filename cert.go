@@ -67,7 +67,9 @@ func (m *mkcert) makeCert(hosts []string) {
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
 		Subject: pkix.Name{
-			Organization:       []string{"mkcert development certificate"},
+			// Personal note: changed org name to something more descriptive for
+			// local dev environments so it's easier to identify in browser UIs.
+			Organization:       []string{"Local Development Certificate"},
 			OrganizationalUnit: []string{userAndHostname},
 		},
 
@@ -107,8 +109,4 @@ func (m *mkcert) makeCert(hosts []string) {
 	cert, err := x509.CreateCertificate(rand.Reader, tpl, m.caCert, pub, m.caKey)
 	fatalIfErr(err, "failed to generate certificate")
 
-	certFile, keyFile, p12File := m.fileNames(hosts)
-
-	if !m.pkcs12 {
-		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: cert})
-		privDER, err := x509.Ma
+	certFile, keyFile, p12
